@@ -6,13 +6,14 @@ import "core:os"
 import "core:strconv"
 import "core:strings"
 
+import term "terminal"
+
 Game_Event :: enum u8 {
     Event_Guess_To_High,
     Event_Guess_To_Low,
     Event_Guess_Correct,
     Event_Invalid_Input
 }
-
 
 
 play_round :: proc(number_to_guess: i32) -> Game_Event {
@@ -94,5 +95,8 @@ get_user_input :: proc() -> (guess: i32, is_valid: bool) {
 }
 
 main :: proc() {
+    p_terminal := term.create_terminal()
+    defer term.destroy_terminal(p_terminal)
+
     run_game()
 }
