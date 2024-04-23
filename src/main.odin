@@ -1,6 +1,8 @@
 package main
 
 import "core:fmt"
+import "core:log"
+
 import "core:math/rand"
 import "core:os"
 import "core:strconv"
@@ -17,7 +19,7 @@ Game_Event :: enum u8 {
 
 
 play_round :: proc(number_to_guess: i32) -> Game_Event {
-    fmt.print("Please enter a guess: ")
+    term.write_at( 10, 10, "Please enter a guess: " )
     guess, is_valid := get_user_input()
     if !is_valid 
     {
@@ -95,8 +97,20 @@ get_user_input :: proc() -> (guess: i32, is_valid: bool) {
 }
 
 main :: proc() {
+    
+    handle, handle_error := os.open("game.log", os.O_WRONLY | os.O_CREATE )
+    if handle_error != os.ERROR_NONE {
+        fmt.printfln( "Failed to open file: %d", handle_error )
+        return
+    }
+
+    context.logger = log.create_file_logger(handle, opt = log.Full_Timestamp_Opts | log.Options{ .Level })
+
+
     p_terminal := term.create_terminal()
     defer term.destroy_terminal(p_terminal)
+
+    term.hide_cursor()
 
     run_game()
 }
